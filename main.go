@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"sort"
 	"strings"
 )
 
@@ -21,23 +22,53 @@ func readFile(fileName string) string {
 	return string(bytes)
 }
 
-func analyze(text string) {
+func analyze(text string) []data {
+
+	karta := make(map[string]int)
 	text = strings.ReplaceAll(text, "\n", " ")
 	text = strings.ReplaceAll(text, "\r", " ")
-	regexp, err := regexp.Compile(`[^\w]`)
+	regexpa, err := regexp.Compile(`[^\w]`)
 	if err != nil {
 		log.Fatal(err)
 	}
-	text = regexp.ReplaceAllString(text, " ")
-	//split := strings.Split(text, " ")
+	text = regexpa.ReplaceAllString(text, " ")
 	split := strings.Fields(text)
-	fmt.Println(split)
+
+	for _, val := range split {
+		if len(val) > 3 {
+			karta[val]++
+		}
+	}
+	//fmt.Println(len(karta) / 2)
+	sliceData := make([]data, 0, len(karta)/2)
+	for key, val := range karta {
+		switch val {
+		case 1:
+			delete(karta, key) // удаляем ключи, значения которых ==1, чтобы меньше аппендить в слайс
+		default:
+			sliceData = append(sliceData, data{key, val})
+		}
+		//if val == 1 {
+		//	delete(karta, key) // удаляем ключи, значения которых =1, чтобы меньше аппендить в слайс
+		//} else {
+		//	sliceData = append(sliceData, data{key, val})
+		//}
+	}
+	sort.Slice(sliceData, func(i, j int) bool {
+		return sliceData[i].count > sliceData[j].count
+	})
+	return sliceData
 }
 
 func main() {
 
 	text := readFile("text.txt")
-	analyze(text)
+	result := analyze(text)
+	//for _, val := range result {
+	//	fmt.Printf("Слово \"%v\" встречается в тексте раз: %v\n", val.word, val.count)
+	//}
 
-	fmt.Println(text)
+	for i := 0; i < 10; i++ {
+		fmt.Printf("Слово \"%v\" встречается в тексте раз: %v\n", result[i].word, result[i].count)
+	}
 }
