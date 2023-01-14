@@ -23,7 +23,6 @@ func readFile(fileName string) string {
 }
 
 func analyze(text string) []data {
-
 	karta := make(map[string]int)
 	text = strings.ReplaceAll(text, "\n", " ")
 	text = strings.ReplaceAll(text, "\r", " ")
@@ -39,7 +38,6 @@ func analyze(text string) []data {
 			karta[val]++
 		}
 	}
-	//fmt.Println(len(karta) / 2)
 	sliceData := make([]data, 0, len(karta)/2)
 	for key, val := range karta {
 		switch val {
@@ -48,11 +46,6 @@ func analyze(text string) []data {
 		default:
 			sliceData = append(sliceData, data{key, val})
 		}
-		//if val == 1 {
-		//	delete(karta, key) // удаляем ключи, значения которых =1, чтобы меньше аппендить в слайс
-		//} else {
-		//	sliceData = append(sliceData, data{key, val})
-		//}
 	}
 	sort.Slice(sliceData, func(i, j int) bool {
 		return sliceData[i].count > sliceData[j].count
@@ -61,14 +54,11 @@ func analyze(text string) []data {
 }
 
 func main() {
-
 	text := readFile("text.txt")
 	result := analyze(text)
-	//for _, val := range result {
-	//	fmt.Printf("Слово \"%v\" встречается в тексте раз: %v\n", val.word, val.count)
-	//}
 
 	for i := 0; i < 10; i++ {
 		fmt.Printf("Слово \"%v\" встречается в тексте раз: %v\n", result[i].word, result[i].count)
 	}
+
 }
